@@ -8,20 +8,34 @@ const { json } = require('body-parser');
 router.post('/', (req, res) => {
     const { error, value } = LoginValidator.validate(req.body);
     if (error) {
-        res.status(400).json({ response: 2, token: token });
+        res.status(400).json({ response: 2 });
     } else {
-        //const token = jwt.sign(JSON.stringify(req.body), '3cfe170c');
-        User.findOne({mail: req.body.email, password: req.body.password}, (err, doc) => {
+        const { email, password } = req.body;
+        User.findOne({ mail: email, password: password }, (err, doc) => {
             if (err) {
                 res.status(500).json({
                     response: 2,
-                    msg: err
+                    msg: {
+                        data: "query_error",
+                        err: err
+                    }
                 });
             } else {
-               doc.token = "qweqeqqweqw";
-               doc.save();
+                if (doc) {
+                    const token = jwt.sign(JSON.stringify(req.body), '3cfe170c');
+                    doc.token = token;
+                    doc.save();
+                    res.json({
+                        response: 1,
+                        token: doc.token
+                    });
+                } else {
+                    res.status(403).json({
+                        response: 2,
+                        msg: "kullanıcı yok"
+                    });
+                }
 
-               res.json(doc);
             }
         });
 
