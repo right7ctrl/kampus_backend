@@ -10,6 +10,10 @@ app.set('port', 3008);
 app.use(express.json());
 app.use(bodyParser.json())
 
+// swagger setup
+const swaggerUi = require("swagger-ui-express");
+swaggerDocument = require("./swagger.json");
+
 // Routes
 app.use('/auth/login', Login);
 app.use('/auth/register', Register);
@@ -39,3 +43,7 @@ app.get('/', (req, res) => {
 app.listen(app.get('port'), () => {
     console.log(`Server on port ${app.get('port')}`);
 });
+
+
+// swagger route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
