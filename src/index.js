@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser')
 const Login = require('./routes/auth/login');
-const User = require('./schema/user/test');
+const User = require('./schema/user/user');
 const db = require('./connection/connection');
 const UserList = require('./routes/user/user_list');
 app.set('port', 3008);
@@ -17,7 +17,11 @@ app.get('/', (req, res) => {
 
     const user = User({
         name: "aliveli",
-        username: "@veliali"
+        username: "@veliali",
+        mail: "aliveli@mail.com",
+        password: "aliveli",
+        school: "erü"
+
     });
     
     user.save((err, a)=>{
