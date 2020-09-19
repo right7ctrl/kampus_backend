@@ -1,7 +1,7 @@
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const chatSchema = new Schema(
+const userSchema = new Schema(
     {
         id: {
             type: Number,
@@ -56,5 +56,5 @@ const chatSchema = new Schema(
         timestamps: true
     });
 
-let Chat = mongoose.model("user1", chatSchema);
-module.exports = Chat;
+let schema = mongoose.model("user", userSchema);
+module.exports = schema;
