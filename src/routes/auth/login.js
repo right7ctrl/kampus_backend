@@ -8,9 +8,9 @@ const { json } = require('body-parser');
 router.post('/', (req, res) => {
     const { error, value } = LoginValidator.validate(req.body);
     if (error) {
-        res.status(400).json({ response: 2});
+        res.status(400).json({ response: 2 });
     } else {
-        const {email, password} = req.body;
+        const { email, password } = req.body;
         User.findOne({ mail: email, password: password }, (err, doc) => {
             if (err) {
                 res.status(500).json({
