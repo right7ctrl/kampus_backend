@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser')
 const Login = require('./routes/auth/login');
+const Register = require('./routes/auth/register');
 const User = require('./schema/user/user');
 const db = require('./connection/connection');
 const UserList = require('./routes/user/user_list');
@@ -11,6 +12,7 @@ app.use(bodyParser.json())
 
 // Routes
 app.use('/auth/login', Login);
+app.use('/auth/register', Register);
 app.use('/user', UserList);
 
 app.get('/', (req, res) => {
@@ -23,11 +25,11 @@ app.get('/', (req, res) => {
         school: "erü"
 
     });
-    
-    user.save((err, a)=>{
+
+    user.save((err, a) => {
         console.log(err);
     });
-    
+
 
 
     res.send('Index');
