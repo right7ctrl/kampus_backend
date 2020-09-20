@@ -6,6 +6,7 @@ const Register = require('./routes/auth/register');
 const User = require('./schema/user/user');
 const db = require('./connection/connection');
 const UserList = require('./routes/list/user_list');
+const ForgotPassword = require('./routes/auth/forgotPassword');
 require('dotenv').config()
 app.set('port', process.env.PORT);
 app.use(express.json());
@@ -18,6 +19,7 @@ swaggerDocument = require("./swagger.json");
 // Routes
 app.use('/auth/login', Login);
 app.use('/auth/register', Register);
+app.use('/auth/forgotPassword', ForgotPassword);
 app.use('/list/user', UserList);
 
 app.get('/', (req, res) => {
