@@ -4,9 +4,9 @@ const bodyParser = require('body-parser')
 const Login = require('./routes/auth/login');
 const Register = require('./routes/auth/register');
 const User = require('./schema/user/user');
-const db = require('./connection/connection');
-const UserList = require('./routes/list/user_list');
 const ForgotPassword = require('./routes/auth/forgotPassword');
+const UserList = require('./routes/list/user_list');
+const AuthMw = require('./middlewares/auth_middleware');
 require('dotenv').config()
 app.set('port', process.env.PORT);
 app.use(express.json());
@@ -20,7 +20,7 @@ swaggerDocument = require("./swagger.json");
 app.use('/auth/login', Login);
 app.use('/auth/register', Register);
 app.use('/auth/forgotPassword', ForgotPassword);
-app.use('/list/user', UserList);
+app.use('/list/user', AuthMw, UserList);
 
 app.get('/', (req, res) => {
 
