@@ -45,6 +45,10 @@ const userSchema = new Schema(
         },
         token: {
             type: String
+        },
+        isOnline: {
+            type: Boolean,
+            default: false
         }
     },
     {
