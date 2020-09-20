@@ -7,31 +7,38 @@ const { json } = require('body-parser');
 
 router.post('/', (req, res) => {
     const { error, value } = forgotPassword.validate(req.body);
-    if (error) {
-        res.status(400).json({ response: 2, message: error });
-    } else {
-        const { email, } = req.body;
-        var query = User.findOne({ email: email, }).select('email');
-        query.exec(
-            (err, doc) => {
-                if (err) {
-                    res.status(500).json({
-                        response: 2,
-                        message: err
-                    });
-                } else {
-                    if (doc) {
+    try {
+        if (error) {
+            res.status(400).json({ response: 2, message: error });
+        } else {
+            const { email, } = req.body;
+            var query = User.findOne({ email: email, }).select('email');
+            query.exec(
+                (err, doc) => {
+                    if (err) {
                         res.status(500).json({
                             response: 2,
-                            message: "Bu mail adresine kayıtlı bir kullanıcı bulunamadı."
+                            message: err
                         });
                     } else {
-                        res.status(200).json({ response: 1, message: "Mail adresinize şifre sıfırlama maili gönderildi." });
+                        if (doc) {
+                            res.status(500).json({
+                                response: 2,
+                                message: "Bu mail adresine kayıtlı bir kullanıcı bulunamadı."
+                            });
+                        } else {
+                            res.status(200).json({ response: 1, message: "Mail adresinize şifre sıfırlama maili gönderildi." });
+                        }
                     }
                 }
-            }
-        );
+            );
+        }
+
+    } catch (e) {
+        res.status(502), json({ response: 2, message: e });
     }
+
+
 });
 
 module.exports = router;
