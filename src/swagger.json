@@ -34,6 +34,20 @@
           }
         }
       }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Log in to the sytem",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Auth/login"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -68,6 +82,18 @@
         },
         "school": {
           "type": "string"
+        }
+      }
+    },
+    "Authentication": {
+      "required": ["email", "password"],
+      "properties": {
+     
+        "response": {
+          "type": "number"
+        },
+        "token": {
+          "type": "String"
         }
       }
     }

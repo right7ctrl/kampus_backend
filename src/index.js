@@ -4,7 +4,6 @@ const bodyParser = require('body-parser')
 const Login = require('./routes/auth/login');
 const Register = require('./routes/auth/register');
 const User = require('./schema/user/user');
-const db = require('./connection/connection');
 const ForgotPassword = require('./routes/auth/forgotPassword');
 const UserList = require('./routes/list/user_list');
 const AuthMw = require('./middlewares/auth_middleware');
