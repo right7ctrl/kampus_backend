@@ -40,10 +40,6 @@
     "User": {
       "required": ["id", "_id", "createdAt", "updatedAt", "__v", "name", "username", "mail", "password", "school"],
       "properties": {
-        "id": {
-          "type": "number",
-          "uniqueItems": true
-        },
         "_id": {
           "type": "string",
           "uniqueItems": true

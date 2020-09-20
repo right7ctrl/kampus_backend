@@ -11,17 +11,16 @@ router.post('/', (req, res) => {
         res.status(400).json({ response: 2 });
     } else {
         const { email, password } = req.body;
-        User.findOne({ mail: email, password: password }, (err, doc) => {
+        User.findOne({ email: email, password: password }, (err, doc) => {
             if (err) {
                 res.status(500).json({
                     response: 2,
-                    msg: {
-                        data: "query_error",
-                        err: err
-                    }
+                    message: err
                 });
             } else {
                 if (doc) {
+                    const d = new Date();
+                    req.body.date = d.getTime();
                     const token = jwt.sign(JSON.stringify(req.body), '3cfe170c');
                     doc.token = token;
                     doc.save();
@@ -32,7 +31,7 @@ router.post('/', (req, res) => {
                 } else {
                     res.status(403).json({
                         response: 2,
-                        msg: "kullanıcı yok"
+                        message: "Kullanıcı adı veya mail adresi geçersiz."
                     });
                 }
 
