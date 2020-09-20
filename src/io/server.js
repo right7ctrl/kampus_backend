@@ -11,15 +11,13 @@ io.sockets.on('connect', (socket) => {
 
     //authorize user to get notify by socket server
     socket.on('register', (user) => {
-        console.log('reg');
-        try {
-            console.log(user.id);
-            User.findOne({ _id:  user._id}, (err, doc) => {
-                console.log(user);
+        console.log(user);
+        User.findOne({ _id: "5f67563f77366967dc7f73e3" }, (err, doc) => {
                 if (err) {
                     console.log('query_error: ' + err);
                 } else {
                     if (doc) {
+                        console.log(doc);
                         doc.isOnline = true;
                         doc.save();
                     } else {
@@ -27,9 +25,6 @@ io.sockets.on('connect', (socket) => {
                     }
                 }
             });
-        } catch (e) {
-            console.log(e);
-        }
     });
 
 
