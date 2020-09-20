@@ -11,32 +11,35 @@ router.post('/', (req, res) => {
         res.status(400).json({ response: 2 });
     } else {
         const { email, password } = req.body;
-        User.findOne({ email: email, password: password }, (err, doc) => {
-            if (err) {
-                res.status(500).json({
-                    response: 2,
-                    message: err
-                });
-            } else {
-                if (doc) {
-                    const d = new Date();
-                    req.body.date = d.getTime();
-                    const token = jwt.sign(JSON.stringify(req.body), '3cfe170c');
-                    doc.token = token;
-                    doc.save();
-                    res.json({
-                        response: 1,
-                        token: doc.token
+        var query = User.findOne({ email: email, password: password }).select('_id name username email phone bio avatar');
+        query.exec(
+            (err, doc) => {
+                if (err) {
+                    res.status(500).json({
+                        response: 2,
+                        message: err
                     });
                 } else {
-                    res.status(403).json({
-                        response: 2,
-                        message: "Kullanıcı adı veya mail adresi geçersiz."
-                    });
-                }
+                    if (doc) {
+                        const d = new Date();
+                        req.body.date = d.getTime();
+                        const token = jwt.sign(JSON.stringify(doc), process.env.JWT_SECRET);
+                        doc.token = token;
+                        doc.save();
+                        res.json({
+                            response: 1,
+                            token: doc.token
+                        });
+                    } else {
+                        res.status(403).json({
+                            response: 2,
+                            message: "Kullanıcı adı veya mail adresi geçersiz."
+                        });
+                    }
 
+                }
             }
-        });
+        );
 
 
 

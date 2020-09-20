@@ -6,7 +6,8 @@ const Register = require('./routes/auth/register');
 const User = require('./schema/user/user');
 const db = require('./connection/connection');
 const UserList = require('./routes/user/user_list');
-app.set('port', 3008);
+require('dotenv').config()
+app.set('port', process.env.PORT);
 app.use(express.json());
 app.use(bodyParser.json())
 
