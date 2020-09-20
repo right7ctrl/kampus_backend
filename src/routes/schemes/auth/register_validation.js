@@ -9,7 +9,7 @@ const schema = Joi.object({
 
 
 
-    mail: Joi.string()
+    email: Joi.string()
         .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required()
 });
 

@@ -3,12 +3,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const userSchema = new Schema(
     {
-        id: {
-            type: Number,
-            min: 1,
-            max: 99999999999,
-            default: 1
-        },
         name: {
             type: String,
             min: 3,
@@ -20,7 +14,7 @@ const userSchema = new Schema(
             max: 32,
             required: true
         },
-        mail: {
+        email: {
             type: String,
             max: 100,
             min: 5,
