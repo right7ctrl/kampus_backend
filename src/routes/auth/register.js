@@ -32,6 +32,7 @@ router.post('/', (req, res) => {
                                     }
                                 });
                             } else {
+                                //usrname
                                 res.status(500).json({ response: 2, message: "Bu kullanıcı kullanıcı adı daha önce alınmış." });
                             }
 

@@ -40,7 +40,8 @@ const userSchema = new Schema(
             max: 400
         },
         avatar: {
-            type: String
+            type: String,
+            default: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Placeholder_no_text.svg/1200px-Placeholder_no_text.png"
         },
         token: {
             type: String
