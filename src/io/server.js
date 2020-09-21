@@ -1,5 +1,3 @@
-var app = require('express')();
-var http = require('http').createServer(app);
 let io = require('socket.io').listen(http);
 const User = require('../schema/user/user');
 const dotenv = require('dotenv');
@@ -46,5 +44,3 @@ io.sockets.on('connect', (socket) => {
 http.listen(process.env.SOCKET_PORT, function () {
     console.log('listening on *:' + process.env.SOCKET_PORT);
 });
-
-module.exports = io;
