@@ -5,21 +5,29 @@ const Login = require('./routes/auth/login');
 const Register = require('./routes/auth/register');
 const User = require('./schema/user/user');
 const ForgotPassword = require('./routes/auth/forgotPassword');
+const ShowProfile = require('./routes/user/showProfile');
+const UserList = require('./routes/list/user_list');
+const AuthMw = require('./middlewares/auth_middleware');
 require('dotenv').config()
 app.set('port', process.env.PORT);
 app.use(express.json());
 app.use(bodyParser.json())
-
 // swagger setup
 const swaggerUi = require("swagger-ui-express");
 swaggerDocument = require("./swagger.json");
 
 // Routes
+
+//auth routes
 app.use('/auth/login', Login);
 app.use('/auth/register', Register);
 app.use('/auth/forgotPassword', ForgotPassword);
-app.use('/auth/showProfile', ShowProfile);
-app.use('/list/user', UserList);
+
+//user routes
+app.use('/user/showProfile', AuthMw, ShowProfile);
+
+//list routes
+app.use('/list/user', AuthMw, UserList);
 
 app.get('/', (req, res) => {
 
