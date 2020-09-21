@@ -4,10 +4,7 @@ const bodyParser = require('body-parser')
 const Login = require('./routes/auth/login');
 const Register = require('./routes/auth/register');
 const User = require('./schema/user/user');
-const db = require('./connection/connection');
-const UserList = require('./routes/list/user_list');
 const ForgotPassword = require('./routes/auth/forgotPassword');
-const ShowProfile = require('./routes/user/showProfile');
 require('dotenv').config()
 app.set('port', process.env.PORT);
 app.use(express.json());
