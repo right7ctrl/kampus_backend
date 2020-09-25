@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser')
 const Login = require('./routes/auth/login');
 const Register = require('./routes/auth/register');
 const User = require('./schema/user/user');
@@ -11,10 +10,6 @@ const mongoose = require('mongoose');
 require('dotenv').config()
 app.set('port', process.env.PORT);
 app.use(express.json());
-// swagger setup
-const swaggerUi = require("swagger-ui-express");
-swaggerDocument = require("./swagger.json");
-
 
 
 mongoose.connect("mongodb://localhost:27017/myproject", {
@@ -37,11 +32,7 @@ app.use('/user/showProfile', ShowProfile);
 app.use('/list/user', UserList);
 
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-
 // Starting the server
 app.listen(app.get('port'), () => {
     console.log(`Server on port ${app.get('port')}`);
 });
-// swagger route
