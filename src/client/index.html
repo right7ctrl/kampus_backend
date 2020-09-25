@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <input type="text" placeholder="msg" id="msgg" />
+    <button onclick="sendMessage()" id="conn">msg</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+    <script>
+      var connected = false;
+      var socket;
+      var uid = "62dba345f9241ba";
+      socket = io("http://localhost:3060");
+
+      socket.on("connect", function () {
+        socket.emit("register", '5f6739cf003ff652bcc5a3c0');
+        socket.on("receive_msg", (data) => {
+          console.log(data);
+        });
+        socket.on("disconnect", (data) => {});
+      });
+
+      function sendMessage() {
+        socket.emit("send_msg", {
+          room: "6206e0fe5604852-3c56d4056974934",
+          message: "tsdasdadasdasd",
+          onCreate: "${DateTime.now()}",
+          sender: uid,
+        });
+      }
+    </script>
+  </body>
+</html>
