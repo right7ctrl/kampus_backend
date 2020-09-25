@@ -10,16 +10,12 @@ const chatSchema = new Schema(
             max: 255
         },
         sender_id: {
-            type: Number,
-            required: true,
-            min: 1,
-            max: 9999999999
+            type: String,
+            required: true
         },
         receiver_id: {
-            type: Number,
-            required: true,
-            min: 1,
-            max: 9999999999
+            type: String,
+            required: true
         }
     },
     {
