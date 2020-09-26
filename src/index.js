@@ -32,6 +32,10 @@ app.use('/user/showProfile', ShowProfile);
 app.use('/list/user', UserList);
 
 
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/client/index.html');
+
+});
 // Starting the server
 app.listen(app.get('port'), () => {
     console.log(`Server on port ${app.get('port')}`);
