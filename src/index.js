@@ -8,15 +8,13 @@ const ShowProfile = require('./routes/user/showProfile');
 const UserList = require('./routes/list/user_list');
 const mongoose = require('mongoose');
 require('dotenv').config()
-app.set('port', process.env.PORT || 8080);
+app.set('port', process.env.PORT || 8080);
 app.use(express.json());
 
 
-mongoose.connect("mongodb://88.248.168.36/myproject", {
+mongoose.connect("mongodb://localhost:27017/myproject", {
     useUnifiedTopology: true,
     useNewUrlParser: true
-}).catch((e) => {
-    console.log('errrr' + e);
 });
 
 
@@ -33,10 +31,6 @@ app.use('/user/showProfile', ShowProfile);
 app.use('/list/user', UserList);
 
 
-// Routes
-app.use('/', (req, res) => {
-    res.send('it works');
-});
 
 // Starting the server
 app.listen(app.get('port'), () => {
