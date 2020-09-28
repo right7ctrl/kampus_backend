@@ -19,6 +19,9 @@ mongoose.connect("mongodb://localhost:27017/myproject", {
 
 
 // Routes
+app.use('/', (req, res) => {
+    res.send('it works');
+});
 
 //auth routes
 app.use('/auth/login', Login);
