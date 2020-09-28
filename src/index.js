@@ -8,13 +8,15 @@ const ShowProfile = require('./routes/user/showProfile');
 const UserList = require('./routes/list/user_list');
 const mongoose = require('mongoose');
 require('dotenv').config()
-app.set('port', process.env.PORT || 8080);
+app.set('port', process.env.PORT || 8080);
 app.use(express.json());
 
 
-mongoose.connect("mongodb://http://kampusbackend.herokuapp.com/myproject", {
+mongoose.connect("mongodb://kampusbackend.herokuapp.com/myproject", {
     useUnifiedTopology: true,
     useNewUrlParser: true
+}).catch((e) => {
+    console.log('errrr' + e);
 });
 
 
