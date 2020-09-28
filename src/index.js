@@ -18,10 +18,6 @@ mongoose.connect("mongodb://localhost:27017/myproject", {
 });
 
 
-// Routes
-app.use('/', (req, res) => {
-    res.send('it works');
-});
 
 //auth routes
 app.use('/auth/login', Login);
@@ -34,6 +30,11 @@ app.use('/user/showProfile', ShowProfile);
 //list routes
 app.use('/list/user', UserList);
 
+
+// Routes
+app.use('/', (req, res) => {
+    res.send('it works');
+});
 
 // Starting the server
 app.listen(app.get('port'), () => {
