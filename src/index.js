@@ -12,7 +12,7 @@ app.set('port', process.env.PORT || 8080);
 app.use(express.json());
 
 
-mongoose.connect("mongodb://kampusbackend.herokuapp.com/myproject", {
+mongoose.connect("mongodb://88.248.168.36/myproject", {
     useUnifiedTopology: true,
     useNewUrlParser: true
 }).catch((e) => {
