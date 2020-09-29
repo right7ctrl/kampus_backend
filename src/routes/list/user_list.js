@@ -1,9 +1,9 @@
 const product = require('../schemes/test')
-const user = require('../../schema/user/user')
+const User = require('../../schema/user/user')
 const router = require('express').Router();
 
 router.post('/', (req, res) => {
-    let query = user.find({}).select('_id name username school avatar').limit(25);
+    let query = User.find({}).select('_id name username school avatar').limit(25);
 
     query.exec((err, doc) => {
         try {

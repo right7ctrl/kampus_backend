@@ -9,7 +9,7 @@ router.post('/', (req, res) => {
     try {
         const { error, value } = LoginValidator.validate(req.body);
         if (error) {
-            res.status(400).json({ response: 2 });
+            res.status(400).json({ response: 2, error });
         } else {
             const { email, password } = req.body;
             var query = User.findOne({ email: email, password: password }).select('_id name username email phone bio avatar');
