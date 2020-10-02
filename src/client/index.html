@@ -1,37 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <input type="text" placeholder="msg" id="msgg" />
-    <button onclick="sendMessage()" id="conn">msg</button>
 
-    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
-    <script>
-      var connected = false;
-      var socket;
-      var uid = "62dba345f9241ba";
-      socket = io("http://localhost:3060");
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
 
-      socket.on("connect", function () {
-        socket.emit("register", '5f6739cf003ff652bcc5a3c0');
-        socket.on("receive_msg", (data) => {
-          console.log(data);
-        });
-        socket.on("disconnect", (data) => {});
+<body>
+  <input type="text" placeholder="msg" id="msgg" />
+  <button onclick="sendMessage()" id="conn">msg</button>
+  <p id="messages">
+    Messages
+  </p>
+  <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+  <script>
+    var connected = false;
+    var socket;
+    var uid = "62dba345f9241ba";
+    socket = io("http://localhost:3060");
+
+    socket.on("connect", function () {
+      socket.emit("register", '5f6739cf003ff652bcc5a3c0');
+      socket.on("receive_msg", (data) => {
+        console.log(data);
+
+
+        var node = document.createElement("li");   
+        node.innerText = data.message; // Create a <li> node
+        document.getElementById("messages").appendChild(node);     // Append <li> to <ul> with id="myList"
+
+
       });
+      socket.on("disconnect", (data) => { });
+    });
 
-      function sendMessage() {
-        socket.emit("send_msg", {
-          room: "6206e0fe5604852-3c56d4056974934",
-          message: "tsdasdadasdasd",
-          onCreate: "${DateTime.now()}",
-          sender: uid,
-        });
-      }
-    </script>
-  </body>
+    function sendMessage() {
+      socket.emit("send_msg", JSON.stringify({
+        receiver_id: "5f66435c6170cf3aeaf1ab7b",
+        message: "tsdasdadasdasd",
+      }));
+    }
+  </script>
+</body>
+
 </html>

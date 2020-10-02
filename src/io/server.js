@@ -55,49 +55,30 @@ io.sockets.on('connect', (socket) => {
 
 
     socket.on('send_msg', (data) => {
-        console.log(activeUsers);
-        console.log('MESSAGE' + data);
-
-        io.emit('receive_msg', {qwq: "qwe"});
-
         /**
-         *  
-         *  Message payload should be like below
-         * { message: "message here", receiver_id: ObjectId(...) }
-         * 
-         */
+ *  
+ *  Message payload should be like below
+ * { message: "message here", receiver_id: ObjectId(...) }
+ * {"message": "message here", "receiver_id": "5f66435c6170cf3aeaf1ab7b"}
+ */
         // TODO: user can not send message to its own
+        // TODO: if the receiver is offline, should get a push notification
         try {
             const { message, receiver_id } = JSON.parse(data);
             const messageItem = Message({
+                room_id: ioID + '-' + receiver_id,
                 message: message,
                 sender_id: ObjectId(ioID),
                 receiver_id: ObjectId(receiver_id)
             });
-
-
-
-            const found = activeUsers.find(element => element._id == ioID);
-            if (activeUsers.indexOf(found) > -1) {
-                messageItem.save();
-                socket.emit('receive_msg', 'qweq');
-            }
-
-
-
-
+            messageItem.save();
+            console.log('received. ' + { message: message, sender_id: ioID });
+            socket.to(socketID).emit('receive_msg', { message: message, sender_id: ioID });
 
         } catch (e) {
             console.log(e);
         }
     });
-
-
-    socket.on('receive_msg', (data) => {
-        console.log('received' + data);
-    });
-
-
 
 
     socket.on('disconnect', (data) => {

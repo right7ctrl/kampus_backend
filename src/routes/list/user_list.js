@@ -1,5 +1,4 @@
-const product = require('../schemes/test')
-const user = require('../../schema/user/user')
+const User = require('../../schema/user/user')
 const router = require('express').Router();
 
 router.post('/', (req, res) => {
