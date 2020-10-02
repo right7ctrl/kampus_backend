@@ -9,7 +9,7 @@ router.post('/', (req, res) => {
     try {
         const { error, value } = LoginValidator.validate(req.body);
         if (error) {
-            res.status(400).json({ response: 2 });
+            res.status(400).json({ response: 2, message: "Eksik veri", error });
         } else {
             const { email, password } = req.body;
             var query = User.findOne({ email: email, password: password }).select('_id name username email phone bio avatar');
@@ -34,7 +34,7 @@ router.post('/', (req, res) => {
                         } else {
                             res.status(403).json({
                                 response: 2,
-                                message: "Kullanıcı adı veya mail adresi geçersiz."
+                                message: "Kullanıcı adı ve/veya mail adresiniz eşleşmedi. Bilgilerinizi kontrol edip tekrar deneyin."
                             });
                         }
                     }
