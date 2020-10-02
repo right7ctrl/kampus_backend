@@ -1,4 +1,3 @@
-const product = require('../schemes/test')
 const User = require('../../schema/user/user')
 const router = require('express').Router();
 
