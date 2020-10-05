@@ -3,7 +3,7 @@ const router = require('express').Router();
 
 router.post('/', (req, res) => {
     try {
-        let query = user.find({}).select('_id name username school avatar').limit(25);
+        let query = User.find({}).select('_id name username school avatar').limit(25);
         query.exec((err, doc) => {
             try {
                 if (err) {
