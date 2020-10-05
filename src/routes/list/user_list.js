@@ -1,12 +1,14 @@
+const { ObjectId } = require('mongodb');
 const User = require('../../schema/user/user')
 const router = require('express').Router();
 
 router.post('/', (req, res) => {
     try {
-        let query = user.find({}).select('_id name username school avatar').limit(25);
+        let query = User.find({ _id: { "$ne": req.headers.parsedToken._id } }).select('_id name username school avatar').limit(25);
         query.exec((err, doc) => {
             try {
                 if (err) {
+                    console.log(err);
                     res.status(500).json({
                         response: 2,
                         message: err
@@ -19,11 +21,13 @@ router.post('/', (req, res) => {
                     });
                 }
             } catch (e) {
+                console.log(e);
                 res.status(502).json({ response: 2, message: e });
             }
 
         });
     } catch (e) {
+        console.log(e);
         res.status(502).json({ response: 2, message: e });
     }
 

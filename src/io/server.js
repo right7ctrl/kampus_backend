@@ -6,6 +6,7 @@ const Message = require('../schema/message/message');
 const dotenv = require('dotenv');
 const { ObjectId } = require('mongodb');
 const db = require('../../src/conn/db');
+const Chat = require('../schema/chat/chat');
 dotenv.config();
 
 let activeCount = 0;
@@ -22,7 +23,6 @@ io.sockets.on('connect', (socket) => {
         ioID = user;
         let q = User.findOne(ObjectId(ioID)).select('_id name username mail created_at isOnline');
         q.exec((err, doc) => {
-            console.log(doc);
             if (err) {
                 console.log(err);
             } else {
@@ -38,8 +38,6 @@ io.sockets.on('connect', (socket) => {
                             username: doc.username,
                             socketid: socketID
                         }
-                        activeUsers.push(user);
-                        console.log(activeUsers);
                     } else {
                         console.log('already connected' + activeUsers);
                     }
@@ -63,17 +61,47 @@ io.sockets.on('connect', (socket) => {
  */
         // TODO: user can not send message to its own
         // TODO: if the receiver is offline, should get a push notification
+
+
+
+
         try {
             const { message, receiver_id } = JSON.parse(data);
-            const messageItem = Message({
-                room_id: ioID + '-' + receiver_id,
-                message: message,
-                sender_id: ObjectId(ioID),
-                receiver_id: ObjectId(receiver_id)
+            let query = Chat.findOne({ receiver_id: ObjectId(receiver_id), sender_id: ObjectId(ioID) });
+            query.exec((err, doc) => {
+
+                if (err) {
+                    console.log(err);
+                } else {
+                    if (!doc) {
+                        const chat = Chat({
+                            receiver_id: ObjectId(receiver_id),
+                            sender_id: ObjectId(ioID),
+                            messages: [
+                                {message: message, sender_id: ioID}
+                            ]
+                        });
+                        chat.save();
+                    }else{
+                        doc.messages.push({message: message, sender_id: ioID});
+                        doc.save();
+                    }
+      /*               const messageItem = Message({
+                        room_id: ioID + '-' + receiver_id,
+                        message: message,
+                        sender_id: ObjectId(ioID),
+                        receiver_id: ObjectId(receiver_id)
+                    });
+                    messageItem.save(); */
+                    console.log('received. ' + { message: message, sender_id: ioID });
+                    socket.to(socketID).emit('receive_msg', { message: message, sender_id: ioID });
+
+                }
+
+
+
+
             });
-            messageItem.save();
-            console.log('received. ' + { message: message, sender_id: ioID });
-            socket.to(socketID).emit('receive_msg', { message: message, sender_id: ioID });
 
         } catch (e) {
             console.log(e);
