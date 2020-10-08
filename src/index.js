@@ -7,8 +7,9 @@ const Message = require('./schema/message/message');
 const ForgotPassword = require('./routes/auth/forgotPassword');
 const ShowProfile = require('./routes/user/showProfile');
 const UserList = require('./routes/list/user_list');
+const ChatList = require('./routes/chat/chat_list');
 const mongoose = require('mongoose');
-const JwtMiddleware =  require('./middlewares/auth_middleware');
+const JwtMiddleware = require('./middlewares/auth_middleware');
 require('dotenv').config()
 app.set('port', process.env.PORT || 8080);
 app.use(express.json());
@@ -27,10 +28,12 @@ app.use('/auth/register', Register);
 app.use('/auth/forgotPassword', ForgotPassword);
 
 //user routes
-app.use('/user/showProfile',JwtMiddleware,  ShowProfile);
+app.use('/user/showProfile', JwtMiddleware, ShowProfile);
 
 //list routes
 app.use('/list/user', JwtMiddleware, UserList);
+
+app.use('/chat/list', JwtMiddleware, ChatList);
 
 // Routes
 app.use('/', (req, res) => {

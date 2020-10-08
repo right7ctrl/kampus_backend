@@ -12,11 +12,11 @@ dotenv.config();
 let activeCount = 0;
 let activeUsers = [];
 let socketID;
+let ioID;
 
 io.sockets.on('connect', (socket) => {
     socketID = socket.id;
     console.log(socketID);
-    let ioID;
     console.log(activeCount);
 
     socket.on('register', (user) => {
@@ -67,40 +67,39 @@ io.sockets.on('connect', (socket) => {
 
         try {
             const { message, receiver_id } = JSON.parse(data);
+            console.log('receiver_id', receiver_id);
+            console.log('ioID', ioID);
             let query = Chat.findOne({ receiver_id: ObjectId(receiver_id), sender_id: ObjectId(ioID) });
             query.exec((err, doc) => {
 
                 if (err) {
                     console.log(err);
                 } else {
+                    console.log('DOC' + doc);
                     if (!doc) {
                         const chat = Chat({
                             receiver_id: ObjectId(receiver_id),
                             sender_id: ObjectId(ioID),
                             messages: [
-                                {message: message, sender_id: ioID}
+                                { message: message, sender_id: ioID }
                             ]
                         });
                         chat.save();
-                    }else{
-                        doc.messages.push({message: message, sender_id: ioID});
+                    } else {
+                        doc.messages.push({ message: message, sender_id: ioID });
                         doc.save();
                     }
-      /*               const messageItem = Message({
-                        room_id: ioID + '-' + receiver_id,
-                        message: message,
-                        sender_id: ObjectId(ioID),
-                        receiver_id: ObjectId(receiver_id)
-                    });
-                    messageItem.save(); */
+                    /*               const messageItem = Message({
+                                      room_id: ioID + '-' + receiver_id,
+                                      message: message,
+                                      sender_id: ObjectId(ioID),
+                                      receiver_id: ObjectId(receiver_id)
+                                  });
+                                  messageItem.save(); */
                     console.log('received. ' + { message: message, sender_id: ioID });
                     socket.to(socketID).emit('receive_msg', { message: message, sender_id: ioID });
 
                 }
-
-
-
-
             });
 
         } catch (e) {
