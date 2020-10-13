@@ -8,6 +8,7 @@ const ForgotPassword = require('./routes/auth/forgotPassword');
 const ShowProfile = require('./routes/user/showProfile');
 const UserList = require('./routes/list/user_list');
 const ChatList = require('./routes/chat/chat_list');
+const ChatDetail = require('./routes/chat/chat_detail');
 const mongoose = require('mongoose');
 const JwtMiddleware = require('./middlewares/auth_middleware');
 require('dotenv').config()
@@ -34,6 +35,7 @@ app.use('/user/showProfile', JwtMiddleware, ShowProfile);
 app.use('/list/user', JwtMiddleware, UserList);
 
 app.use('/chat/list', JwtMiddleware, ChatList);
+app.use('/chat/detail', JwtMiddleware, ChatDetail);
 
 // Routes
 app.use('/', (req, res) => {
@@ -44,6 +46,7 @@ app.use('/', (req, res) => {
 
     });
     message.save();
+    res.send('it works');
 });
 
 
