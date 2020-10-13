@@ -15,7 +15,7 @@ app.set('port', process.env.PORT || 8080);
 app.use(express.json());
 
 
-mongoose.connect("mongodb://localhost:27017/myproject", {
+mongoose.connect("mongodb://78.47.144.207:27017/myproject", {
     useUnifiedTopology: true,
     useNewUrlParser: true
 });
