@@ -12,7 +12,7 @@ router.post('/', (req, res) => {
             res.status(400).json({ response: 2, message: "Eksik veri", error });
         } else {
             const { email, password } = req.body;
-            var query = User.findOne({ email: email, password: password }).select('_id name username email phone bio avatar');
+            var query = User.findOne({ email: email, password: password }).select('_id name username email phone bio avatar school');
             query.exec(
                 (err, doc) => {
                     if (err) {

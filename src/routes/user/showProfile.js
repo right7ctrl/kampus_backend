@@ -6,32 +6,39 @@ const { ObjectId } = require('mongodb');
 
 router.post('/', (req, res) => {
     const { error, value } = showprofile.validate(req.body);
-
-    if (error) {
-        res.status(400).json({ response: 2, message: error });
-    } else {
-        const { id } = req.body;
-        let query = User.findOne(ObjectId(id)).select('_id name username mail avatar school');
-        query.exec(
-            (err, doc) => {
-                if (err) {
-                    res.status(500).json({
-                        response: 2,
-                        message: err
-                    });
-                } else {
-                    if (doc) {
-                        res.status(200).json({ response: 1, message: doc });
-                    } else {
+    try {
+        console.log(error);
+        if (error) {
+            res.status(400).json({ response: 2, message: error });
+        } else {
+            const { id } = req.body;
+            let query = User.findOne(ObjectId(id)).select('_id username name mail avatar school').limit(1);
+            query.exec(
+                (err, doc) => {
+                    console.log(err);
+                    if (err) {
                         res.status(500).json({
                             response: 2,
-                            message: "Bu id numarasına kayıtlı bir kullanıcı bulunamadı."
+                            message: err
                         });
+                    } else {
+                        if (doc) {
+                            res.status(200).json({ response: 1, items: [doc] });
+                        } else {
+                            console.log('eee');
+                            res.status(200).json({
+                                response: 2,
+                                message: "Bu id numarasına kayıtlı bir kullanıcı bulunamadı."
+                            });
+                        }
                     }
                 }
-            }
-        );
+            );
+        }
+    } catch (e) {
+        console.log(e);
     }
+
 
 
 });
