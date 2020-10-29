@@ -15,6 +15,19 @@ router.post('/', (req, res) => {
             res.status(400).json({ response: 2, message: error });
         } else {
             const { id } = req.body;
+
+
+           let x = Chat.aggregate([
+                { $project: { lastFriend: { $arrayElemAt: ['$messages', -1] } } },
+              ]);
+
+              x.exec((e, d) => {
+                  console.log(e);
+                  console.log(d);
+              });
+
+
+
             let query = Chat.find({ $or: [{ receiver_id: ObjectId(id) }, { sender_id: ObjectId(id) }] }).select('receiver_id sender_id _id created_at updated_at');
             query.exec(
                 async (err, doc) => {
@@ -49,6 +62,7 @@ router.post('/', (req, res) => {
                                     returnData['receiver'] = { id: i.receiver_id, name: user.name };
     
                                 } else {
+                                    //karşı taraf
                                     returnData['receiver'] = { id: i.sender_id, name: req.headers.parsedToken.name };
                                     returnData['sender'] = { id: i.receiver_id, name: user.name };
                                 }

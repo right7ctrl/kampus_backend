@@ -7,6 +7,7 @@ router.post('/', (req, res) => {
     const { error, value } = RegisterValidation.validate(req.body);
     try {
         if (error) {
+            console.log(error);
             res.status(400).json({ response: 2, message: error });
         } else {
             const { name, username, email, password, school } = req.body;

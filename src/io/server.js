@@ -13,6 +13,7 @@ let activeCount = 0;
 let activeUsers = [];
 let socketID;
 let ioID;
+let registered = [];
 
 io.sockets.on('connect', (socket) => {
     socketID = socket.id;
@@ -21,36 +22,37 @@ io.sockets.on('connect', (socket) => {
 
     socket.on('register', (user) => {
         ioID = user;
+        console.log('IO: ', ioID);
 
         if (user) {
             let q = User.findOne(ObjectId(ioID)).select('_id name username mail created_at isOnline');
             q.exec((err, doc) => {
-                if (err) {
-                    console.log(err);
-                } else {
-                    if (doc) {
-                        console.log(doc);
-                        const found = activeUsers.find(element => element._id == ioID);
-                        if (activeUsers.indexOf(found) == -1) {
-                            doc.isOnline = true;
-                            doc.save();
-                            let user = {
-                                _id: doc._id,
-                                name: doc.name,
-                                username: doc.username,
-                                socketid: socketID
-                            }
-                        } else {
-                            console.log('already connected' + activeUsers);
+                if (err) throw err;
+
+                if (doc) {
+                    console.log(doc);
+                    const found = activeUsers.find(element => element._id == ioID);
+                    if (activeUsers.indexOf(found) == -1) {
+                        doc.isOnline = true;
+                        doc.save();
+                        let user = {
+                            _id: doc._id,
+                            name: doc.name,
+                            username: doc.username,
+                            socketid: socketID
                         }
-                        console.log(activeUsers);
                     } else {
-                        console.log('User not found');
+                        console.log('already connected' + activeUsers);
                     }
+                    console.log(activeUsers);
+                    registered[ioID] = socket.id;
+                } else {
+                    console.log('User not found');
                 }
+
             });
             console.log(activeUsers);
-        }else{
+        } else {
             console.log('yser ', user);
         }
 
@@ -60,55 +62,49 @@ io.sockets.on('connect', (socket) => {
 
 
     socket.on('send_msg', (data) => {
-        /**
- *  
- *  Message payload should be like below
- * { message: "message here", receiver_id: ObjectId(...) }
- * {"message": "message here", "receiver_id": "5f66435c6170cf3aeaf1ab7b"}
- */
-        // TODO: user can not send message to its own
         // TODO: if the receiver is offline, should get a push notification
-
-
-
-
         try {
-            const { message, receiver_id } = JSON.parse(data);
-            console.log('receiver_id', receiver_id);
-            console.log('ioID', ioID);
-            let query = Chat.findOne({ receiver_id: ObjectId(receiver_id), sender_id: ObjectId(ioID) });
-            query.exec((err, doc) => {
+            const { message, receiver_id, sender_id } = JSON.parse(data);
+     
 
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log('DOC' + doc);
-                    if (!doc) {
-                        const chat = Chat({
-                            receiver_id: ObjectId(receiver_id),
-                            sender_id: ObjectId(ioID),
-                            messages: [
-                                { message: message, sender_id: ioID }
-                            ]
-                        });
-                        chat.save();
-                    } else {
-                        doc.messages.push({ message: message, sender_id: ioID });
-                        doc.save();
-                    }
-                    /*               const messageItem = Message({
-                                      room_id: ioID + '-' + receiver_id,
-                                      message: message,
-                                      sender_id: ObjectId(ioID),
-                                      receiver_id: ObjectId(receiver_id)
-                                  });
-                                  messageItem.save(); */
-                    console.log('received. ' + { message: message, sender_id: ioID });
-                    socket.to(socketID).emit('receive_msg', { message: message, sender_id: ioID });
+            if (receiver_id === sender_id) {
+                console.log('cannot send message to its own');
+                return;
+            }
 
-                }
+
+            let query = Chat.findOne({
+                $or: [
+                    { $and: [{ receiver_id: ObjectId(receiver_id) }, { sender_id: ObjectId(sender_id) }] },
+                    { $and: [{ sender_id: ObjectId(receiver_id) }, { receiver_id: ObjectId(sender_id) }] },
+                ]
             });
 
+            query.exec((err, doc) => {
+                var today = new Date();
+                var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                var dateTime = date + ' ' + time;
+
+                if (err) throw err;
+                if (!doc) {
+                    const chat = Chat({
+                        receiver_id: ObjectId(receiver_id),
+                        sender_id: ObjectId(sender_id),
+                        messages: [
+                            { message: message, sender_id: sender_id, created_at: dateTime }
+                        ]
+                    });
+                    chat.save();
+                } else {
+                    doc.messages.push({ message: message, sender_id: sender_id, created_at: dateTime });
+                    doc.save();
+                }
+
+                console.log('SENDER_ID: ', sender_id);
+
+                socket.to(registered[receiver_id]).emit('receive_msg', { message: message, sender_id: sender_id });
+            });
         } catch (e) {
             console.log(e);
         }
