@@ -17,14 +17,14 @@ router.post('/', (req, res) => {
             const { id } = req.body;
 
 
-           let x = Chat.aggregate([
+            let x = Chat.aggregate([
                 { $project: { lastFriend: { $arrayElemAt: ['$messages', -1] } } },
-              ]);
+            ]);
 
-              x.exec((e, d) => {
-                  console.log(e);
-                  console.log(d);
-              });
+            x.exec((e, d) => {
+                console.log(e);
+                console.log(d);
+            });
 
 
 
@@ -41,35 +41,35 @@ router.post('/', (req, res) => {
                         if (doc) {
                             console.log('doc', doc);
                             let returnArr = [];
-                            for(let i of doc){
+                            for (let i of doc) {
                                 let userid = req.headers.parsedToken._id == i.sender_id ? i.receiver_id : i.sender_id;
                                 console.log('userid', userid);
-                                let user = await User.findOne({ _id: ObjectId(userid) }).select('name');
+                                let user = await User.findOne({ _id: ObjectId(userid) }).select('name avatar');
                                 console.log(user);
-    
-    
+
+
                                 let returnData = {
                                     _id: i._id,
                                     created_at: i.created_at,
                                     updated_at: i.updated_at,
                                     messages: i.messages
                                 }
-    
-    
+
+
                                 if (req.headers.parsedToken._id == i.sender_id) {
                                     //iseği atan
-                                    returnData['sender'] = { id: i.sender_id, name: req.headers.parsedToken.name };
-                                    returnData['receiver'] = { id: i.receiver_id, name: user.name };
-    
+                                    returnData['sender'] = { id: i.sender_id, name: req.headers.parsedToken.name, avatar: req.headers.parsedToken.avatar };
+                                    returnData['receiver'] = { id: i.receiver_id, name: user.name, avatar: user.avatar };
+
                                 } else {
                                     //karşı taraf
-                                    returnData['receiver'] = { id: i.sender_id, name: req.headers.parsedToken.name };
-                                    returnData['sender'] = { id: i.receiver_id, name: user.name };
+                                    returnData['receiver'] = { id: i.receiver_id, name: req.headers.parsedToken.name, avatar: req.headers.parsedToken.avatar };
+                                    returnData['sender'] = { id: i.sender_id, name: user.name, avatar: user.avatar };
                                 }
                                 returnArr.push(returnData);
                             }
 
-                           
+
                             res.status(200).json({ response: 1, items: returnArr });
                         } else {
                             console.log('eee');

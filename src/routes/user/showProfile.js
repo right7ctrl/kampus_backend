@@ -12,7 +12,7 @@ router.post('/', (req, res) => {
             res.status(400).json({ response: 2, message: error });
         } else {
             const { id } = req.body;
-            let query = User.findOne(ObjectId(id)).select('_id username name mail avatar school').limit(1);
+            let query = User.findOne(ObjectId(id)).select('_id username name mail avatar school bio grade department').limit(1);
             query.exec(
                 (err, doc) => {
                     console.log(err);

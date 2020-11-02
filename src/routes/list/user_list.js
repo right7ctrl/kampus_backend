@@ -3,8 +3,12 @@ const User = require('../../schema/user/user')
 const router = require('express').Router();
 
 router.post('/', (req, res) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Headers', 'Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
+    res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
     try {
-        let query = User.find({ _id: { "$ne": req.headers.parsedToken._id } }).select('_id name username school avatar').limit(25);
+        let query = User.find({ _id: { "$ne": req.headers.parsedToken._id } }).select('_id name username school avatar grade').limit(25);
         query.exec((err, doc) => {
             try {
                 if (err) {

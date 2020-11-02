@@ -45,7 +45,7 @@ io.sockets.on('connect', (socket) => {
                         console.log('already connected' + activeUsers);
                     }
                     console.log(activeUsers);
-                    registered[ioID] = socket.id;
+                    if (registered[ioID] != socket.id)  registered[ioID] = socket.id;
                 } else {
                     console.log('User not found');
                 }
@@ -65,7 +65,11 @@ io.sockets.on('connect', (socket) => {
         // TODO: if the receiver is offline, should get a push notification
         try {
             const { message, receiver_id, sender_id } = JSON.parse(data);
-     
+            if (!registered[sender_id]) {
+                console.log('register first');
+                return;
+            }
+
 
             if (receiver_id === sender_id) {
                 console.log('cannot send message to its own');

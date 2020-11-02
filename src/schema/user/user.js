@@ -33,11 +33,21 @@ const userSchema = new Schema(
         },
         school: {
             type: String,
+            required: true,
+        },
+        department: {
+            type: String,
             required: true
+        },
+        grade: {
+            type: Number,
+            required: true,
+            maxlength: 1,
+            default: 1
         },
         bio: {
             type: String,
-            max: 400
+            max: 300
         },
         avatar: {
             type: String,
@@ -49,7 +59,7 @@ const userSchema = new Schema(
         isOnline: {
             type: Boolean,
             default: false
-        }
+        },
     },
     {
         timestamps: true
