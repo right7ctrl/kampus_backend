@@ -9,59 +9,79 @@ const db = require('../../src/conn/db');
 const Chat = require('../schema/chat/chat');
 dotenv.config();
 
-let activeCount = 0;
-let activeUsers = [];
-let socketID;
-let ioID;
 let registered = [];
 
 io.sockets.on('connect', (socket) => {
+    let ioID;
     socketID = socket.id;
-    console.log(socketID);
-    console.log(activeCount);
 
-    socket.on('register', (user) => {
-        ioID = user;
-        console.log('IO: ', ioID);
+    if (!socket.handshake.query._id) return;
+    ioID = socket.handshake.query._id;
 
-        if (user) {
-            let q = User.findOne(ObjectId(ioID)).select('_id name username mail created_at isOnline');
-            q.exec((err, doc) => {
-                if (err) throw err;
-
-                if (doc) {
-                    console.log(doc);
-                    const found = activeUsers.find(element => element._id == ioID);
-                    if (activeUsers.indexOf(found) == -1) {
-                        doc.isOnline = true;
-                        doc.save();
-                        let user = {
-                            _id: doc._id,
-                            name: doc.name,
-                            username: doc.username,
-                            socketid: socketID
-                        }
-                    } else {
-                        console.log('already connected' + activeUsers);
-                    }
-                    console.log(activeUsers);
-                    if (registered[ioID] != socket.id)  registered[ioID] = socket.id;
-                } else {
-                    console.log('User not found');
-                }
-
-            });
-            console.log(activeUsers);
+    let q = User.findOne(ObjectId(ioID)).select('_id name username mail created_at isOnline');
+    q.exec((err, doc) => {
+        if (err) throw err;
+        if (doc) {
+            if (!registered[ioID]) {
+                registered[ioID] = socket.id
+                doc.isOnline = true;
+                doc.save();
+            } else {
+                console.log('Handshake failed, user already connected: ', ioID);
+            }
         } else {
-            console.log('yser ', user);
+            console.log('Handshake failed, user not found: ', ioID);
         }
-
-
+        console.log('REGISTERED_CON: ', registered);
     });
 
 
+    /* 
+        socket.on('register', (user) => {
+            ioID = user;
+            console.log('IO: ', ioID);
+    
+            if (user) {
+                let q = User.findOne(ObjectId(ioID)).select('_id name username mail created_at isOnline');
+                q.exec((err, doc) => {
+                    if (err) throw err;
+    
+                    if (doc) {
+                        console.log(doc);
+                        const found = activeUsers.find(element => element._id == ioID);
+                        if (activeUsers.indexOf(found) == -1) {
+                            doc.isOnline = true;
+                            doc.save();
+                            let user = {
+                                _id: doc._id,
+                                name: doc.name,
+                                username: doc.username,
+                                socketid: socketID
+                            }
+                        } else {
+                            console.log('already connected' + activeUsers);
+                        }
+                        console.log(activeUsers);
+                        if (!registered[ioID])  registered[ioID] = socket.id;
+                    } else {
+                        console.log('User not found');
+                    }
+    
+                });
+                console.log(activeUsers);
+            } else {
+                console.log('yser ', user);
+            }
+    
+            io.emit('registered', registered);
+    
+    
+        });
+    
+     */
 
     socket.on('send_msg', (data) => {
+        io.emit('registered', { reg: registered });
         // TODO: if the receiver is offline, should get a push notification
         try {
             const { message, receiver_id, sender_id } = JSON.parse(data);
@@ -116,15 +136,9 @@ io.sockets.on('connect', (socket) => {
 
 
     socket.on('disconnect', (data) => {
-        try {
-            const found = activeUsers.find(element => element._id == ioID);
-            if (activeUsers.indexOf(found) > -1) {
-                activeUsers.splice(activeUsers.indexOf(found), 1);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-        console.log(activeUsers);
+        console.log('Client disconnected: ', ioID);
+        delete registered[ioID];
+        console.log('REGISTERED_DC', registered);
     });
 
 
