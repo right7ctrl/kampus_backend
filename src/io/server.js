@@ -126,7 +126,7 @@ io.sockets.on('connect', (socket) => {
     });
 
     //data içinde receiver_id var
-    socket.on('seen', (data) => {
+    socket.on('seen', (data) => {/* 
         let receiver_id = data.receiver_id;
         let sender_id = ioID;
 
@@ -152,7 +152,7 @@ io.sockets.on('connect', (socket) => {
 
 
         });
-
+ */
     });
 
 
