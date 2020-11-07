@@ -5,32 +5,35 @@ const router = require('express').Router();
 const User = require('../../schema/user/user');
 const { send } = require('../../io/server');
 
-router.post('/', (req, res) => {
-
-    console.log('AWEEWQEQ');
+router.post('/',async (req, res) => {
     const { error, value } = ChatList.validate(req.body);
     try {
-        console.log(error);
+        if (error) throw error;
         if (error) {
             res.status(400).json({ response: 2, message: error });
         } else {
             const { id } = req.body;
 
 
-            let x = Chat.aggregate([
-                { $project: { lastFriend: { $arrayElemAt: ['$messages', -1] } } },
-            ]);
-
-            x.exec((e, d) => {
-                console.log(e);
-                console.log(d);
-            });
-
-
-
+          
             let query = Chat.find({ $or: [{ receiver_id: ObjectId(id) }, { sender_id: ObjectId(id) }] }).select('receiver_id sender_id _id created_at updated_at');
             query.exec(
                 async (err, doc) => {
+                    let val = await Chat.aggregate([
+                        { 
+                            $match: { 
+                              '_id': doc.id 
+                            }
+                          },
+                          { 
+                            $project: {
+                              comments: {
+                                $slice: [ "$messages", -1 ] 
+                              }
+                            }
+                          }
+                    ]);
+        
                     console.log(err);
                     if (err) {
                         res.status(500).json({
@@ -47,12 +50,14 @@ router.post('/', (req, res) => {
                                 let user = await User.findOne({ _id: ObjectId(userid) }).select('name avatar');
                                 console.log(user);
 
+                           
 
                                 let returnData = {
                                     _id: i._id,
                                     created_at: i.created_at,
                                     updated_at: i.updated_at,
-                                    messages: i.messages
+                                    messages: i.messages,
+                                    val: val
                                 }
 
 

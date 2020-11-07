@@ -18,7 +18,7 @@ io.sockets.on('connect', (socket) => {
     if (!socket.handshake.query._id) return;
     ioID = socket.handshake.query._id;
 
-    let q = User.findOne(ObjectId(ioID)).select('_id name username mail created_at isOnline');
+    let q = User.findOne(ObjectId(ioID)).select('isOnline');
     q.exec((err, doc) => {
         if (err) throw err;
         if (doc) {
@@ -81,7 +81,6 @@ io.sockets.on('connect', (socket) => {
      */
 
     socket.on('send_msg', (data) => {
-        io.emit('registered', { reg: registered });
         // TODO: if the receiver is offline, should get a push notification
         try {
             const { message, receiver_id, sender_id } = JSON.parse(data);
@@ -89,21 +88,16 @@ io.sockets.on('connect', (socket) => {
                 console.log('register first');
                 return;
             }
-
-
             if (receiver_id === sender_id) {
                 console.log('cannot send message to its own');
                 return;
             }
-
-
             let query = Chat.findOne({
                 $or: [
                     { $and: [{ receiver_id: ObjectId(receiver_id) }, { sender_id: ObjectId(sender_id) }] },
                     { $and: [{ sender_id: ObjectId(receiver_id) }, { receiver_id: ObjectId(sender_id) }] },
                 ]
             });
-
             query.exec((err, doc) => {
                 var today = new Date();
                 var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
@@ -116,17 +110,14 @@ io.sockets.on('connect', (socket) => {
                         receiver_id: ObjectId(receiver_id),
                         sender_id: ObjectId(sender_id),
                         messages: [
-                            { message: message, sender_id: sender_id, created_at: dateTime }
+                            { message: message, sender_id: sender_id, created_at: dateTime, seen_by: [sender_id] }
                         ]
                     });
                     chat.save();
                 } else {
-                    doc.messages.push({ message: message, sender_id: sender_id, created_at: dateTime });
+                    doc.messages.push({ message: message, sender_id: sender_id, created_at: dateTime, seen_by: [sender_id] });
                     doc.save();
                 }
-
-                console.log('SENDER_ID: ', sender_id);
-
                 socket.to(registered[receiver_id]).emit('receive_msg', { message: message, sender_id: sender_id });
             });
         } catch (e) {
@@ -134,14 +125,53 @@ io.sockets.on('connect', (socket) => {
         }
     });
 
+    //data içinde receiver_id var
+    socket.on('seen', (data) => {
+        let receiver_id = data.receiver_id;
+        let sender_id = ioID;
 
-    socket.on('disconnect', (data) => {
-        console.log('Client disconnected: ', ioID);
-        delete registered[ioID];
-        console.log('REGISTERED_DC', registered);
+        if (!receiver_id || !sender_id) { console.log('eksik'); return; }
+
+        let query = Chat.findOne({
+            $or: [
+                { $and: [{ receiver_id: ObjectId(receiver_id) }, { sender_id: ObjectId(sender_id) }] },
+                { $and: [{ sender_id: ObjectId(receiver_id) }, { receiver_id: ObjectId(sender_id) }] },
+            ]
+        });
+
+        query.exec(async (err, chat) => {
+            console.log(err);
+            console.log(chat);
+            chat.messages.forEach( async (f) => {
+                if (f.seen_by) {
+                    f.seen_by.push('qweqwe');
+                    await chat.save();
+                }
+            });
+
+
+
+        });
+
     });
 
 
+    socket.on('disconnect', async (data) => {
+        console.log('Client disconnected: ', ioID);
+        delete registered[ioID];
+        console.log('REGISTERED_DC', registered);
+        try {
+            let q = User.findOne(ObjectId(ioID)).select('isOnline');
+            q.exec((err, doc) => {
+                if (err) throw Error;
+                doc.isOnline = false;
+                doc.save();
+                console.log(doc);
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    });
 });
 
 

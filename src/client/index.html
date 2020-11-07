@@ -24,19 +24,18 @@
 
     socket = io("http://localhost:3060", {
       query: {
-          _id: "5f9b0119f4a4fe7c368daee9"
+          _id: "5f9b0134f4a4fe7c368daeea"
         }
     });
 
     socket.on("connect", function () {
-console.log(socket.id);
+      console.log(socket.id);
 
       socket.on('registered', (registered)=>{
         console.log(registered);
       });
 
       socket.on('receive_msg', (data) => {
-        
         var node = document.createElement("li");        
         var textnode = document.createTextNode(data);        
         node.appendChild(textnode);                             
@@ -60,7 +59,7 @@ console.log(socket.id);
     function sendMessage() {
       socket.emit('send_msg', JSON.stringify({
         receiver_id: document.getElementById('receiver').value,
-        sender_id: document.getElementById('me').value,
+        sender_id: "5f9b0134f4a4fe7c368daeea",
 
         message: document.getElementById('msgg').value,
 

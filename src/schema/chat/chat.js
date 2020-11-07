@@ -15,9 +15,8 @@ const chatsSchema = new Schema(
         },
         messages: {
             type: Array,
-            min: 0,
-            max: 255
-        }
+            min: 0
+        },
     },
     {
         timestamps: true
