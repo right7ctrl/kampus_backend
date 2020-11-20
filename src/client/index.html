@@ -8,38 +8,66 @@
 </head>
 
 <body>
+  <input type="text" placeholder="me" id="me" />
+  <input type="text" placeholder="receiver" id="receiver" />
   <input type="text" placeholder="msg" id="msgg" />
-  <button onclick="sendMessage()" id="conn">msg</button>
-  <p id="messages">
-    Messages
-  </p>
+  <button onclick="register()" id="conn">Conn</button>
+  <button onclick="sendMessage()" id="conn">Msg</button>
+  <button onclick="dc()" id="conn">dc</button>
+  <ul id="myList">
+
+  </ul>
   <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
   <script>
     var connected = false;
     var socket;
-    var uid = "62dba345f9241ba";
-    socket = io("http://localhost:3060");
 
-    socket.on("connect", function () {
-      socket.emit("register", '5f6739cf003ff652bcc5a3c0');
-      socket.on("receive_msg", (data) => {
-        console.log(data);
-
-
-        var node = document.createElement("li");   
-        node.innerText = data.message; // Create a <li> node
-        document.getElementById("messages").appendChild(node);     // Append <li> to <ul> with id="myList"
-
-
-      });
-      socket.on("disconnect", (data) => { });
+    socket = io("http://localhost:3060", {
+      query: {
+          _id: "5f9b0134f4a4fe7c368daeea"
+        }
     });
 
+    socket.on("connect", function () {
+      console.log(socket.id);
+
+      socket.on('registered', (registered)=>{
+        console.log(registered);
+      });
+
+      socket.on('receive_msg', (data) => {
+        var node = document.createElement("li");        
+        var textnode = document.createTextNode(data);        
+        node.appendChild(textnode);                             
+        document.getElementById("myList").appendChild(node);    
+
+      });
+      
+      socket.on("disconnect", (data) => {
+        console.log('disconnect', data);
+       });
+    });
+
+    function register() {
+      socket.emit('register', document.getElementById('me').value);
+    }
+
+    function dc(){
+      socket.disconnect();
+    }
+
     function sendMessage() {
-      socket.emit("send_msg", JSON.stringify({
-        receiver_id: "5f66435c6170cf3aeaf1ab7b",
-        message: "tsdasdadasdasd",
+      socket.emit('send_msg', JSON.stringify({
+        receiver_id: document.getElementById('receiver').value,
+        sender_id: "5f9b0134f4a4fe7c368daeea",
+
+        message: document.getElementById('msgg').value,
+
       }));
+      var node = document.createElement("li");        
+        var textnode = document.createTextNode(document.getElementById('msgg').value);        
+        node.appendChild(textnode);                             
+        document.getElementById("myList").appendChild(node);    
     }
   </script>
 </body>

@@ -16,11 +16,21 @@ app.set('port', process.env.PORT || 8080);
 app.use(express.json());
 
 //78.47.144.207
-mongoose.connect("mongodb://78.47.144.207:27017/myproject", {
+mongoose.connect("mongodb://-/myproject", {
     useUnifiedTopology: true,
     useNewUrlParser: true
 });
 
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Headers', 'Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token');
+    res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    console.log('REQ');
+
+    next();
+});
 
 
 //auth routes
@@ -37,17 +47,7 @@ app.use('/list/user', JwtMiddleware, UserList);
 app.use('/chat/list', JwtMiddleware, ChatList);
 app.use('/chat/detail', JwtMiddleware, ChatDetail);
 
-// Routes
-app.use('/', (req, res) => {
-    const message = Message({
-        message: "asdasdad",
-        sender_id: "wsdasd",
-        receiver_id: "asdadasda"
 
-    });
-    message.save();
-    res.send('it works');
-});
 
 
 

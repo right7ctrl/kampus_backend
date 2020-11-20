@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const { json } = require('body-parser');
 
 router.post('/', (req, res) => {
+    
     try {
         const { error, value } = LoginValidator.validate(req.body);
         if (error) {
